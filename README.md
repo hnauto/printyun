@@ -8,24 +8,25 @@
   4、支付是否排版，考虑到打印样式繁多，如果选择需要排版，可先上传文件到服务器，顾客去打印店后告知老板打印要求，老板再通过系统直接打印，避免了U盘传输等。  
   5、老板可后台查看所有历史订单及需要排版的订单，可以在线预览/下载打印等  
 ## 说明
-此开源版本仅仅是把资料上传系统，如果需要自动打印还需要一个系统去监控数据库进行打印，此系统日后开源。  
+系统分为两部分：Web服务器端（print）和打印服务端（print-try）
 
   **作业流程图**
 ![](http://pic.printyun.cn/printyun_overflow.png)
-  ---
-  在线测试地址：  
-  http://139.9.7.123:8001/login/login   
-  测试账号：123456  密码：123456  
-  因为测试地址未安装redis，所以无法测试支付，实际环境已经测试可用，需要自行配置
-  ---
+ 
+ ## 效果图
+ ![](http://pic.printyun.cn/%E4%BA%91%E6%89%93%E5%8D%B0%E7%A4%BA%E4%BE%8B.gif)
 
 ## 部署
-因为系统本身业务比较复杂，里面需要修改的地方比较多，有能力的朋友可以根据debug修改，这里提供需要修改的文件，仅供参考:  
-app/certs 三个密钥文件  
-app/config.py 数据库配置  
-app/sms.py 阿里sms相关配置  
+系统分为两部分，其中print为Web服务端，可以部署到任何一台有python环境的电脑；print-try为打印机服务端，运行在连接打印机的树莓派上。    
 
-### 1、本机测试  
+### 先行工作
+Web服务端用到了mysql和redis
+下载后在两个文件夹内搜索文本“自行配置”，将所有数据库配置改为自己的数据库  
+配置支付密钥和阿里sms  
+print/app/certs 支付密钥文件    
+print/app/sms.py 阿里sms相关配置  
+
+### 1、Web服务端 
 修改完上述位置配置后  
 ```python
 pip install -r requirements.txt
@@ -39,6 +40,16 @@ docker image build -it printyun .
 docker container run -d -p 8001:8001 --name printyun pringyun
 ```
 宿主主机打开http://127.0.0.1:8001 看到hello world成功  
+
+### 3、打印机端部署
+树莓派连接打印机并进入系统，运行
+```python
+cd print-try
+pip install -r requirements.txt
+./restart.sh
+```
+之后，程序自动监测Web服务端，一旦发现上传文件并成功支付就会发送命令至打印机打印
+
 
 ## 相关URL
 /login/login 登录  

@@ -1,3 +1,0 @@
------BEGIN PUBLIC KEY-----
-支付宝公钥
------END PUBLIC KEY-----
