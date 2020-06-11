@@ -57,6 +57,7 @@ def ali_computerpay():
     global new_filename
     new_filename = dati.File_Name
 
+# return_url自行配置
     order_string = alipays.api_alipay_trade_page_pay(out_trade_no=tradeid,
                                                     total_amount=cost,
                                                     subject='云打印订单',
